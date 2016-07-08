@@ -6,6 +6,8 @@ import tornado.web
 from tornado import ioloop
 from MotorCar.car_ctrl import Car
 from MotorCar.wheel import Wheel
+import logging
+import logging.handlers
 
 author = "Ryan Song"
 
@@ -20,6 +22,26 @@ rr_wheel = Wheel(12, 14)
 motor_car = Car(fl_wheel, fr_wheel, rl_wheel, rr_wheel)
 
 
+def init_logging():
+    """
+    日志文件设置，同时打印在日志文件和屏幕上
+    """
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    sh = logging.StreamHandler()
+    file_log = logging.handlers.TimedRotatingFileHandler('motorcar.log', 'MIDNIGHT', 1, 0)
+    formatter = logging.Formatter(
+        '[%(asctime)s] [%(levelname)-7s] [%(module)s:%(filename)s-%(funcName)s-%(lineno)d] %(message)s')
+    sh.setFormatter(formatter)
+    file_log.setFormatter(formatter)
+
+    logger.addHandler(sh)
+    logger.addHandler(file_log)
+
+    logging.info("Current log level is : %s", logging.getLevelName(logger.getEffectiveLevel()))
+
+
 class WsHandle(tornado.websocket.WebSocketHandler):
     def data_received(self, chunk):
         pass
@@ -28,7 +50,7 @@ class WsHandle(tornado.websocket.WebSocketHandler):
         """
         新客户端连接
         """
-        print('client has connected! {}'.format(str(id(self))))
+        logging.info('client has connected! {}'.format(str(id(self))))
 
     def on_close(self):
         """
@@ -38,14 +60,14 @@ class WsHandle(tornado.websocket.WebSocketHandler):
 
         global isAlreadyConnect
         isAlreadyConnect = 0
-        print("client has disconnected! {}".format(str(id(self))))
+        logging.info("client has disconnected! {}".format(str(id(self))))
 
     def on_message(self, message):
         """
         处理客户端主动上行的消息
         :param message: 消息体内容
         """
-        print("Recv = {}".format(message))
+        logging.info("Recv = {}".format(message))
         if message == "forward":
             motor_car.car_forward()
         elif message == "astern":
@@ -61,7 +83,7 @@ class WsHandle(tornado.websocket.WebSocketHandler):
         elif message == "stop_all":
             motor_car.car_stop()
         else:
-            print("unknown command = {}".format(message))
+            logging.error("unknown command = {}".format(message))
 
     def check_origin(self, origin):
         """
@@ -79,6 +101,8 @@ class WsHandle(tornado.websocket.WebSocketHandler):
 
 def start_serv():
     try:
+        init_logging()
+
         # http server url配置
         app_handlers = [
             # websocket接口
@@ -91,11 +115,11 @@ def start_serv():
 
         http_server = tornado.httpserver.HTTPServer(app)
         http_server.listen(9090)
-        print("start http server at: {}".format(9090))
+        logging.info("start http server at: {}".format(9090))
 
         ioloop.IOLoop.instance().start()
     except Exception as e:
-        print('Exception: %s'.format(e))
+        logging.error('Exception: %s'.format(e))
 
 if __name__ == "__main__":
     start_serv()
