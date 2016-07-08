@@ -18,13 +18,13 @@ class WsHandle(tornado.websocket.WebSocketHandler):
 
     def open(self):
         """
-        新客户端连接，以连接id作为key，记录到客户端字典中
+        新客户端连接
         """
         print('client has connected! {}'.format(str(id(self))))
 
     def on_close(self):
         """
-        连接断开，删除客户端字段中对应客户端数据
+        连接断开
         """
         motor_car.car_stop()
 
@@ -57,7 +57,7 @@ class WsHandle(tornado.websocket.WebSocketHandler):
 
     def check_origin(self, origin):
         """
-        websocket请求有效性检查，暂时对任何连接有效
+        websocket请求有效性检查
         :param origin:
         :return:
         """
