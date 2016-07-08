@@ -4,12 +4,20 @@ import tornado.httpserver
 import tornado.websocket
 import tornado.web
 from tornado import ioloop
-from MotorCar.car_ctrl import motor_car
+from MotorCar.car_ctrl import Car
+from MotorCar.wheel import Wheel
 
 author = "Ryan Song"
 
 # 只允许一个连接
 isAlreadyConnect = 0
+
+# 车辆配置
+fl_wheel = Wheel(13, 15)
+fr_wheel = Wheel(22, 24)
+rl_wheel = Wheel(6, 8)
+rr_wheel = Wheel(12, 14)
+motor_car = Car(fl_wheel, fr_wheel, rl_wheel, rr_wheel)
 
 
 class WsHandle(tornado.websocket.WebSocketHandler):

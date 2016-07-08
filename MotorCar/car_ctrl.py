@@ -5,11 +5,6 @@ from MotorCar.wheel import Wheel
 
 author = "Ryan Song"
 
-fl_wheel = Wheel(13, 15)
-fr_wheel = Wheel(22, 24)
-rl_wheel = Wheel(6, 8)
-rr_wheel = Wheel(12, 14)
-
 
 class Car(object):
     def __init__(self, front_left_wheel, front_right_wheel, rear_left_wheel, rear_right_wheel):
@@ -84,6 +79,3 @@ class Car(object):
         GPIO.output(self.wheels["rl"].pin2, 0)
         GPIO.output(self.wheels["rr"].pin1, 0)
         GPIO.output(self.wheels["rr"].pin2, 0)
-
-
-motor_car = Car(fl_wheel, fr_wheel, rl_wheel, rr_wheel)
