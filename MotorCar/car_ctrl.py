@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import RPi.GPIO as GPIO
-from MotorCar.wheel import Wheel
 
 author = "Ryan Song"
 
@@ -16,10 +15,18 @@ class Car(object):
         }
 
         GPIO.setmode(GPIO.BOARD)
-        for wheel in self.wheels:
-            if isinstance(wheel, Wheel):
-                GPIO.setup(wheel.pin1, GPIO.OUT)
-                GPIO.setup(wheel.pin2, GPIO.OUT)
+
+        GPIO.setup(self.wheels["fl"].pin1, GPIO.OUT)
+        GPIO.setup(self.wheels["fl"].pin2, GPIO.OUT)
+
+        GPIO.setup(self.wheels["fr"].pin1, GPIO.OUT)
+        GPIO.setup(self.wheels["fr"].pin2, GPIO.OUT)
+
+        GPIO.setup(self.wheels["rl"].pin1, GPIO.OUT)
+        GPIO.setup(self.wheels["rl"].pin2, GPIO.OUT)
+
+        GPIO.setup(self.wheels["rr"].pin1, GPIO.OUT)
+        GPIO.setup(self.wheels["rr"].pin2, GPIO.OUT)
 
     def __del__(self):
         self.car_stop()
@@ -48,14 +55,14 @@ class Car(object):
         GPIO.output(self.wheels["rr"].pin2, 1)
 
     def car_turn_left(self):
-        GPIO.output(self.wheels["fl"].pin1, 0)
-        GPIO.output(self.wheels["fl"].pin2, 1)
+        GPIO.output(self.wheels["fl"].pin1, 1)
+        GPIO.output(self.wheels["fl"].pin2, 0)
         GPIO.output(self.wheels["fr"].pin1, 0)
         GPIO.output(self.wheels["fr"].pin2, 0)
 
         GPIO.output(self.wheels["rl"].pin1, 0)
-        GPIO.output(self.wheels["rl"].pin2, 1)
-        GPIO.output(self.wheels["rr"].pin1, 0)
+        GPIO.output(self.wheels["rl"].pin2, 0)
+        GPIO.output(self.wheels["rr"].pin1, 1)
         GPIO.output(self.wheels["rr"].pin2, 0)
 
     def car_turn_right(self):
@@ -64,9 +71,9 @@ class Car(object):
         GPIO.output(self.wheels["fr"].pin1, 1)
         GPIO.output(self.wheels["fr"].pin2, 0)
 
-        GPIO.output(self.wheels["rl"].pin1, 0)
+        GPIO.output(self.wheels["rl"].pin1, 1)
         GPIO.output(self.wheels["rl"].pin2, 0)
-        GPIO.output(self.wheels["rr"].pin1, 1)
+        GPIO.output(self.wheels["rr"].pin1, 0)
         GPIO.output(self.wheels["rr"].pin2, 0)
 
     def car_stop(self):

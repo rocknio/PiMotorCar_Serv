@@ -17,9 +17,8 @@ isAlreadyConnect = 0
 # 车辆配置
 fl_wheel = Wheel(13, 15)
 fr_wheel = Wheel(22, 24)
-rl_wheel = Wheel(6, 8)
-rr_wheel = Wheel(12, 14)
-motor_car = Car(fl_wheel, fr_wheel, rl_wheel, rr_wheel)
+rl_wheel = Wheel(35, 37)
+rr_wheel = Wheel(36, 38)
 
 
 def init_logging():
@@ -43,6 +42,10 @@ def init_logging():
 
 
 class WsHandle(tornado.websocket.WebSocketHandler):
+    def __init__(self, application, request, **kwargs):
+        super().__init__(application, request, **kwargs)
+        self.motor_car = None
+
     def data_received(self, chunk):
         pass
 
@@ -51,12 +54,14 @@ class WsHandle(tornado.websocket.WebSocketHandler):
         新客户端连接
         """
         logging.info('client has connected! {}'.format(str(id(self))))
+        self.motor_car = Car(fl_wheel, fr_wheel, rl_wheel, rr_wheel)
 
     def on_close(self):
         """
         连接断开
         """
-        motor_car.car_stop()
+        self.motor_car.car_stop()
+        del self.motor_car
 
         global isAlreadyConnect
         isAlreadyConnect = 0
@@ -69,19 +74,19 @@ class WsHandle(tornado.websocket.WebSocketHandler):
         """
         logging.info("Recv = {}".format(message))
         if message == "forward":
-            motor_car.car_forward()
+            self.motor_car.car_forward()
         elif message == "astern":
-            motor_car.car_astern()
+            self.motor_car.car_astern()
         elif message == "turn_left":
-            motor_car.car_turn_left()
+            self.motor_car.car_turn_left()
         elif message == "turn_right":
-            motor_car.car_turn_right()
+            self.motor_car.car_turn_right()
         elif message == "stop_left":
             pass
         elif message == "stop_right":
             pass
         elif message == "stop_all":
-            motor_car.car_stop()
+            self.motor_car.car_stop()
         else:
             logging.error("unknown command = {}".format(message))
 
